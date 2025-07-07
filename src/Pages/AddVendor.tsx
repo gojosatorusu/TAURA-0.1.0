@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { invoke } from "@tauri-apps/api/core";
 import { ArrowLeft, User, ChevronDown } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useMessage } from './context/Message';
@@ -48,18 +47,13 @@ const AddVendor = () => {
   useEffect(() => {
     const loadRegionsAndLocations = async () => {
       try {
-        console.log('Calling get_all_regions...');
-        const regions = await invoke('get_all_regions_vendors') as string[];
-        console.log('Received regions:', regions);
+        const regions = await Promise;
         setAllRegions(regions);
 
         // Add this part for locations
-        console.log('Calling get_all_locations...');
-        const locations = await invoke('get_all_locations_vendors') as string[];
-        console.log('Received locations:', locations);
+        const locations = await Promise;
         setAllLocations(locations);
       } catch (error) {
-        console.error('Error loading regions/locations:', error);
         handleError(t('vendor.failedToLoad'));
       }
     };
@@ -388,8 +382,7 @@ const AddVendor = () => {
         region: formData.region.trim() // Insert as-is if no suggestion was selected
       };
 
-      await invoke('add_vendor', vendorData);
-      console.log('Vendor added:', vendorData);
+      await Promise;
 
       handleSuccess();
 
@@ -406,7 +399,6 @@ const AddVendor = () => {
       });
 
     } catch (error) {
-      console.error('Error adding vendor:', error);
       handleError(error as string || t('vendor.failedToAdd'));
     } finally {
       setLoading(false);

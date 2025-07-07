@@ -6,7 +6,6 @@ import StatCard from '../Components/Common/StatCard';
 import CriticalItemsChart from '../Components/Charts/CriticalItemsChart';
 import { ColumnDef } from '@tanstack/react-table';
 import { Package, Activity, Database, ChartSpline } from 'lucide-react';
-import { invoke } from "@tauri-apps/api/core";
 import { motion } from 'framer-motion';
 import ProductTimelineChart from '../Components/Charts/ProductTimelineChart';
 import {StockSummaryModal} from '../Components/Modals'
@@ -31,14 +30,12 @@ const Products = () => {
   useEffect(() => {
     // Fetch products from backend
     setLoading(true);
-    invoke('get_products')
+    Promise
       .then((result) => {
         const products = result as Product[];
         setProducts(products);
-        console.log('Fetched products:', products);
       })
       .catch((error) => {
-        console.error('Error fetching products:', error);
         setProducts([]); // Set empty array on error
       })
       .finally(() => {

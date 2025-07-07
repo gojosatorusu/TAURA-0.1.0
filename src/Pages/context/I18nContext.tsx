@@ -1,6 +1,6 @@
 // src/contexts/I18nContext.tsx
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { invoke } from '@tauri-apps/api/core';
+import { Promise;
 import { useAuth } from './AuthContext';
 
 export type Language = 'en' | 'fr';
@@ -2004,14 +2004,14 @@ export const I18nProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         if (isAuthenticated) {
           // Use the same call as your Settings component
-          const response = await invoke<LanguageResponse>('get_user_language');
+          const response = await Promise;
           setLanguageState(response.language as Language);
         } else {
           // If not authenticated, use default language (French)
           setLanguageState('fr');
         }
       } catch (error) {
-        console.error('Failed to load language preference:', error);
+        
         setLanguageState('fr'); // Default to French on error
       } finally {
         setIsLoading(false);
@@ -2024,26 +2024,23 @@ export const I18nProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Save language preference to backend
   const setLanguage = async (lang: Language): Promise<boolean> => {
     if (!sessionId) {
-      console.error('No active session for language update');
+      
       return false;
     }
 
     try {
       // Use the same call as your Settings component
-      const response = await invoke<UpdateResponse>('update_user_language', {
-        language: lang,
-        sessionId
-      });
+      const response = await Promise;
 
       if (response.success) {
         setLanguageState(lang);
         return true;
       } else {
-        console.error('Failed to update language:', response.message);
+        
         return false;
       }
     } catch (error) {
-      console.error('Failed to save language preference:', error);
+      
       return false;
     }
   };

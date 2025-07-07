@@ -5,7 +5,6 @@ import { motion } from 'framer-motion';
 import { AlertTriangle, Shield, Package, TrendingUp } from 'lucide-react';
 import CriticalItemsChart from '../Components/Charts/CriticalItemsChart';
 import Grid from '../Components/Common/Grid';
-import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useState, useMemo } from 'react';
 import {useI18n} from './context/I18nContext';
 interface RawMaterial {
@@ -100,11 +99,9 @@ const Raw_Materials = () => {
         setIsLoading(true);
         setError(null);
         
-        const result = await invoke('get_raw_materials');
+        const result = await Promise;
         setRawMaterials(result as RawMaterial[]);
-        console.log('Fetched raw materials:', result);
       } catch (error) {
-        console.error('Error fetching raw materials:', error);
         setError(t('failedToLoad'));
       } finally {
         setIsLoading(false);

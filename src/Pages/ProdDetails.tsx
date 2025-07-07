@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { invoke } from "@tauri-apps/api/core";
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNotifications } from './context/NotificationContext'; // Add this import
 import { useEdit } from './context/EditContext';
@@ -113,7 +112,7 @@ const ProdDetails = () => {
 
     const fetchProductData = async () => {
       try {
-        let result = await invoke('get_product_recipe', { productId: Number(product?.id) });
+        let result = await Promise;
         const recipeData = result as RecipeItem[];
         // Add unique IDs to recipe items if they don't have them
         const recipeWithIds = recipeData.map((item, index) => ({
@@ -121,13 +120,10 @@ const ProdDetails = () => {
           id: item.id || `recipe-${index}-${Date.now()}`
         }));
         setRecipe(recipeWithIds);
-        console.log('Product data fetched:', result);
 
-        result = await invoke('get_raw_materials');
+        result = await Promise;
         setRawMaterials(result as RawMaterial[]);
-        console.log('Raw materials fetched:', result);
       } catch (error) {
-        console.error('Error fetching Data:', error);
         handleError(t('failedToLoad'));
       } finally {
         setLoadingData(false);
@@ -180,13 +176,7 @@ const ProdDetails = () => {
 
     setLoading(true);
     try {
-      await invoke('update_product', {
-        productId: Number(product.id),
-        name: editForm.name.trim(),
-        quantity: Math.round(Number(quantity)),
-        threshold: Math.round(Number(threshold)),
-        unitPrice: Math.round(Number(unitPrice)*100)/100
-      });
+      await Promise;
 
       // Update local state
       setProduct({
@@ -200,7 +190,6 @@ const ProdDetails = () => {
       setIsEditing(false);
       handleInfo('Saving Product Info...');
     } catch (error) {
-      console.error('Error updating product:', error);
       handleError(t('messages.failedToUpdateProduct'));
     } finally {
       setLoading(false);
@@ -264,16 +253,12 @@ const ProdDetails = () => {
 
     setLoading(true);
     try {
-      await invoke('update_product_recipe', {
-        productId: Number(product.id),
-        recipe
-      });
+      await Promise;
 
       setIsEditingItems(false);
       setOriginalRecipe([]);
       handleInfo(t('product.saveRecipe'));
     } catch (error) {
-      console.error('Error updating recipe:', error);
       handleError(t('product.failedUpdateRecipe'));
     } finally {
       setLoading(false);
@@ -288,10 +273,7 @@ const ProdDetails = () => {
 
     setLoading(true);
     try {
-      await invoke('produce_product', {
-        productId: Number(product.id),
-        produceQuantity: Math.round(Number(productionQuantity))
-      });
+      await Promise;
 
       // Update product quantity locally
       setProduct({
@@ -304,7 +286,6 @@ const ProdDetails = () => {
       handleInfo(`${productionQuantity} ${(productionQuantity>1)? t('units'): t('unit')}`);
       await checkNotifications();
     } catch (error) {
-      console.error('Error producing product:', error);
       handleError(t('product.failedToProduce'));
     } finally {
       setLoading(false);
@@ -316,14 +297,13 @@ const ProdDetails = () => {
 
     setLoading(true);
     try {
-      await invoke('delete_product', { productId: Number(product.id) });
+      await Promise;
       handleSuccess(t('product.deletedSuccess'));
 
       setTimeout(() => {
         navigate(-1);
       }, 2000);
     } catch (error) {
-      console.error('Error deleting product:', error);
       handleError(t('product.deleteFailed'));
     } finally {
       setLoading(false);

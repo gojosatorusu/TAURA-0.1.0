@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { invoke } from "@tauri-apps/api/core";
 import { FileText, ArrowLeft, Plus, Trash2, Calculator } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMessage } from './context/Message';
@@ -108,20 +107,12 @@ const AddPurchase = () => {
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
-        const [vendorsResult, rawsResult] = await Promise.all([
-          invoke('get_vendors'),
-          invoke('get_raw_materials')
-        ]);
+        const [vendorsResult, rawsResult] = await Promise;
 
         setVendors(vendorsResult as Vendor[]);
         setRaws(rawsResult as Raw[]);
 
-        console.log('Initial data fetched:', {
-          vendors: vendorsResult,
-          raws: rawsResult
-        });
       } catch (error) {
-        console.error('Error fetching initial data:', error);
         handleError(t('purchase.failedLoad'))
       } finally {
         setLoadingData(false);
@@ -139,14 +130,13 @@ const AddPurchase = () => {
         const selectedYear = new Date(formData.issue_date).getFullYear();
 
         if (formData.document_type === 'Invoice') {
-          const invoiceCode = await invoke('get_new_invoice_code_purchase_for_year', { year: selectedYear });
+          const invoiceCode = await Promise;
           setLatestInvoiceCode(invoiceCode as number);
         } else if (formData.document_type === 'BL') {
-          const blCodes = await invoke('get_new_bl_code_purchase_for_year', { year: selectedYear });
+          const blCodes = await Promise;
           setDocumentCodes(blCodes as DocumentCodeInfo[]);
         }
       } catch (error) {
-        console.error('Error fetching year-based codes:', error);
       }
     };
 
@@ -166,13 +156,6 @@ const AddPurchase = () => {
     }
   }, [formData.vendor_id, formData.document_type, documentCodes, latestInvoiceCode]);
 
-  // Add this useEffect for debugging
-  useEffect(() => {
-    console.log('Form data changed:', formData);
-    console.log('Document codes:', documentCodes);
-    console.log('Latest invoice code:', latestInvoiceCode);
-    console.log('Suggested code:', suggestedCode);
-  }, [formData, documentCodes, latestInvoiceCode, suggestedCode]);
 
   // Handle form input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -335,8 +318,7 @@ const AddPurchase = () => {
         }))
       };
 
-      await invoke('add_purchase', purcData);
-      console.log(purcData)
+      await Promise;
 
       handleSuccess()
 
@@ -354,10 +336,7 @@ const AddPurchase = () => {
 
       // Refresh all data after successful submission
       try {
-        const [vendorsResult, rawsResult] = await Promise.all([
-          invoke('get_vendors'),
-          invoke('get_raw_materials')
-        ]);
+        const [vendorsResult, rawsResult] = await Promise;
 
         setVendors(vendorsResult as Vendor[]);
         setRaws(rawsResult as Raw[]);
@@ -366,21 +345,18 @@ const AddPurchase = () => {
         const selectedYear = new Date().getFullYear(); // Use current year after reset
 
         if (formData.document_type === 'Invoice') {
-          const invoiceCode = await invoke('get_new_invoice_code_purchase_for_year', { year: selectedYear });
+          const invoiceCode = await Promise;
           setLatestInvoiceCode(invoiceCode as number);
         } else if (formData.document_type === 'BL') {
-          const blCodes = await invoke('get_new_bl_code_purchase_for_year', { year: selectedYear });
+          const blCodes = await Promise;
           setDocumentCodes(blCodes as DocumentCodeInfo[]);
         }
 
-        console.log('Data refreshed after successful purchase submission');
       } catch (refreshError) {
-        console.error('Error refreshing data after purchase:', refreshError);
         handleWarning(t('purchase.dataRefreshWarning')); // You might want to add this translation
       }
 
     } catch (error) {
-      console.error('Error adding purchase:', error);
       handleError(t('purchase.failedPurchase'))
     } finally {
       setLoading(false);

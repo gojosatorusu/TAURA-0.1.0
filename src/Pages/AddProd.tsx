@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { invoke } from "@tauri-apps/api/core";
 import { Package, ArrowLeft, Plus, Trash2, ChefHat } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMessage } from './context/Message';
 import { useI18n } from './context/I18nContext';
-// Define interfaces
+
 interface RawMaterial {
   id: number;
   name: string;
@@ -63,11 +62,9 @@ const AddProd = () => {
   useEffect(() => {
     const fetchRawMaterials = async () => {
       try {
-        const result = await invoke('get_raw_materials');
+        const result = await Promise;
         setRawMaterials(result as RawMaterial[]);
-        console.log('Raw materials fetched:', result);
       } catch (error) {
-        console.error('Error fetching raw materials:', error);
         handleError(t('addProduct.failedToLoadRawMaterials'));
       } finally {
         setLoadingRawMaterials(false);
@@ -200,13 +197,7 @@ const AddProd = () => {
     setLoading(true);
     try {
 
-      const result = await invoke('add_product_with_recipe', {
-        name: formData.name.trim(),
-        quantity,
-        threshold,
-        unitPrice: unit_price,
-        recipe: recipe
-      });
+      const result = await Promise;
 
       handleSuccess(result as string);
 
@@ -221,17 +212,14 @@ const AddProd = () => {
 
       // Refresh raw materials data after successful submission
       try {
-        const rawMaterialsResult = await invoke('get_raw_materials');
+        const rawMaterialsResult = await Promise;
         setRawMaterials(rawMaterialsResult as RawMaterial[]);
 
-        console.log('Raw materials refreshed after successful product addition');
       } catch (refreshError) {
-        console.error('Error refreshing raw materials after product addition:', refreshError);
         handleError(t('addProduct.dataRefreshWarning')); // You might want to add this translation
       }
 
     } catch (error) {
-      console.error('Error adding product:', error);
       handleError(t('addProduct.failedToAdd'));
     } finally {
       setLoading(false);

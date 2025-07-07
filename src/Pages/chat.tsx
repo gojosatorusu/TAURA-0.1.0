@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import {
   Bot,
@@ -104,9 +103,9 @@ const Chat: React.FC = () => {
   useEffect(() => {
     const initializeAI = async () => {
       try {
-        await invoke('initialize_ai_chat');
+        await Promise;
       } catch (error) {
-        console.error('Failed to initialize AI service:', error);
+
       }
     };
     initializeAI();
@@ -144,7 +143,6 @@ const Chat: React.FC = () => {
           }
         });
       } catch (error) {
-        console.error('Failed to set up stream listener:', error);
       }
     };
 
@@ -172,40 +170,30 @@ const Chat: React.FC = () => {
 
   // Toggle context button - Fixed to work with backend
   const toggleContext = async (contextId: string) => {
-    console.log('Toggling context:', contextId);
 
     const newActiveContexts = new Set(activeContexts);
 
     if (newActiveContexts.has(contextId)) {
-      console.log('Removing context:', contextId);
       newActiveContexts.delete(contextId);
       setActiveContexts(newActiveContexts);
       return;
     }
 
-    console.log('Adding context to loading state:', contextId);
     setContextLoading(prev => new Set(prev).add(contextId));
 
     try {
-      console.log('Calling get_context_data with:', [contextId]);
       const startTime = Date.now();
 
       // Call backend with array of context types
-      const result = await invoke('get_context_data', {
-        contextTypes: [contextId] // Send as array matching backend expectation
-      });
+      const result = await Promise;
 
       const endTime = Date.now();
-      console.log('get_context_data completed in', endTime - startTime, 'ms');
-      console.log('Result:', result);
 
       // Only activate if data loading was successful
       newActiveContexts.add(contextId);
       setActiveContexts(newActiveContexts);
-      console.log('Context activated successfully:', contextId);
 
     } catch (error) {
-      console.error('Failed to load context data for', contextId, ':', error);
       // Show user-friendly error message
       setMessages(prev => [...prev, {
         id: Date.now().toString(),
@@ -214,7 +202,6 @@ const Chat: React.FC = () => {
         timestamp: new Date()
       }]);
     } finally {
-      console.log('Removing from loading state:', contextId);
       setContextLoading(prev => {
         const newSet = new Set(prev);
         newSet.delete(contextId);
@@ -227,9 +214,7 @@ const Chat: React.FC = () => {
   const cancelGeneration = async () => {
     if (currentStreamingMessageIdRef.current) {
       try {
-        await invoke('cancel_ai_generation', {
-          messageId: currentStreamingMessageIdRef.current
-        });
+        await Promise;
 
         setIsLoading(false);
         const messageId = currentStreamingMessageIdRef.current;
@@ -248,7 +233,6 @@ const Chat: React.FC = () => {
           )
         );
       } catch (error) {
-        console.error('Failed to cancel generation:', error);
         setIsLoading(false);
         currentStreamingMessageIdRef.current = null;
       }
@@ -289,14 +273,9 @@ const Chat: React.FC = () => {
       // Convert active contexts to array for backend
       const activeContextTypes = Array.from(activeContexts);
 
-      await invoke('send_ai_message_with_context', {
-        message: userMessage.content,
-        sessionId: sessionIdRef.current,
-        activeContexts: activeContextTypes // Send as array matching backend expectation
-      });
+      await Promise;
 
     } catch (error) {
-      console.error('Send message error:', error);
       setMessages(prev =>
         prev.map(msg =>
           msg.id === streamingMessageId

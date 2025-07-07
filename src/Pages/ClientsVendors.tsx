@@ -4,7 +4,6 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Users, Briefcase, DollarSign, FileText, List,Truck } from 'lucide-react';
 import Grid from '../Components/Common/Grid';
 import StatCard from '../Components/Common/StatCard';
-import { invoke } from "@tauri-apps/api/core";
 import {useI18n} from './context/I18nContext';
 interface Client {
   id: number;
@@ -62,13 +61,11 @@ const ClientsVendors: React.FC = () => {
       setIsLoading(true);
       try {
         // Fetch vendors
-        const vendorsResult = await invoke('get_whole_vendors');
+        const vendorsResult = await Promise;
         const vendorsList = vendorsResult as Vendor[];
-        console.log("Vednors : ",vendorsList)
         // Fetch client rests
-        const restsResultV = await invoke('get_vendors_rests');
+        const restsResultV = await Promise;
         const restsListV = restsResultV as Rester[];
-        console.log('Rests Data:', restsListV);
 
         const vendorsWithRests = vendorsList.map(vendor => {
           const restData = restsListV.find(rest => rest.id === vendor.id);
@@ -79,17 +76,14 @@ const ClientsVendors: React.FC = () => {
         });
 
         setVendors(vendorsWithRests);
-        console.log('Vendors Data:', vendorsList);
 
         // Fetch clients
-        const clientsResult = await invoke('get_whole_clients');
+        const clientsResult = await Promise;
         const clientsList = clientsResult as Client[];
-        console.log("whole client .....", clientsList)
 
         // Fetch client rests
-        const restsResult = await invoke('get_clients_rests');
+        const restsResult = await Promise;
         const restsList = restsResult as Rester[];
-        console.log('Rests Data:', restsList);
 
         // Merge clients with their rest amounts
         const clientsWithRests = clientsList.map(client => {
@@ -101,10 +95,8 @@ const ClientsVendors: React.FC = () => {
         });
 
         setClients(clientsWithRests);
-        console.log('Clients Data with Rests:', clientsWithRests);
         setIsLoading(false);
       } catch (err) {
-        console.error('Error fetching data:', err);
         setError(t('failedToLoad'));
         setIsLoading(false);
       }
@@ -193,7 +185,6 @@ const ClientsVendors: React.FC = () => {
       const totalVendors = vendors.length;
       const totalRest = vendors.reduce((sum, vendor) => sum + (vendor.rest || 0), 0);
       const vendorsWithDebt = vendors.filter(vendor => (vendor.rest || 0) > 0).length;
-      console.log('vendors rest!!!!!!!!!!!!!!!', totalRest);
     return {
       totalVendors,
       totalRest,

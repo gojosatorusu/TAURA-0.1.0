@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { invoke } from "@tauri-apps/api/core";
 import {
   History as HistoryIcon,
   Search,
@@ -106,12 +105,11 @@ const History = () => {
   const fetchLogs = async () => {
     try {
       setLoading(true);
-      const result = await invoke('get_activity_logs');
+      const result = await Promise;
       const logsList = result as ActivityLog[];
       setLogs(logsList);
       setFilteredLogs(logsList);
     } catch (error) {
-      console.error('Error fetching activity logs:', error);
       addToast({
         message: t('history.errorFetching'),
         type: 'error',
@@ -210,7 +208,6 @@ const History = () => {
       const params = JSON.parse(log.parameters || '{}');
       return t(log.translation_key, params);
     } catch (error) {
-      console.error('Error parsing log parameters:', error);
       return log.translation_key;
     }
   };
@@ -343,7 +340,6 @@ const History = () => {
       // Generic state comparison for other categories
       return renderGenericDetails(oldState, newState);
     } catch (error) {
-      console.error('Error parsing state data:', error);
       return (
         <div className="text-rose-800 text-sm">
           Error parsing detail data

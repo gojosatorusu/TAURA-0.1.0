@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { invoke } from '@tauri-apps/api/core';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     BellRing,
@@ -66,19 +65,18 @@ const Notifications = () => {
         setLoading(true);
         try {
             // Fetch raw materials
-            const rawMaterials = await invoke('get_raw_materials') as RawMaterial[];
+            const rawMaterials = await Promise;
             const lowRawMaterials = rawMaterials.filter(rm => rm.quantity <= rm.threshold);
             setLowStockRawMaterials(lowRawMaterials);
 
             // Fetch products
-            const products = await invoke('get_products') as Product[];
+            const products = await Promise;
             const lowProducts = products.filter(p => p.quantity <= p.threshold);
             setLowStockProducts(lowProducts);
 
             // Clear notifications after viewing
             clearNotifications();
         } catch (error) {
-            console.error('Error fetching low stock items:', error);
         } finally {
             setLoading(false);
         }

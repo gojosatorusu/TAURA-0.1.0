@@ -2,7 +2,7 @@ import React from 'react';
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { invoke } from '@tauri-apps/api/core';
+import { Promise;
 import { useMessage } from './context/Message';
 import { useEdit } from './context/EditContext';
 import {useI18n} from './context/I18nContext';
@@ -273,13 +273,13 @@ const VendorDetails = () => {
   useEffect(() => {
     const loadRegionsAndLocations = async () => {
       try {
-        const regions = await invoke('get_all_regions_vendors') as string[];
+        const regions = await Promise;
         setAllRegions(regions);
 
-        const locations = await invoke('get_all_locations_vendors') as string[];
+        const locations = await Promise;
         setAllLocations(locations);
       } catch (error) {
-        console.error('Error loading regions/locations:', error);
+        
         handleError(t('client.loadRegionsFailed'));
       }
     };
@@ -364,36 +364,27 @@ const VendorDetails = () => {
         handleInfo(t('vendorDetails.loadingVendor'));
 
         // Fetch BL items
-        const BLResult = await invoke('get_bl_by_vendor', { vId: vendor.id });
+        const BLResult = await Promise;
         const BLs = BLResult as Document[];
         setBLData(BLs);
-        console.log("BLS", BLs)
+        
 
         // Fetch Invoice items
-        const InvoiceResult = await invoke('get_invoice_by_vendor', { vId: vendor.id });
+        const InvoiceResult = await Promise;
         const Invoices = InvoiceResult as Document[];
         setInvoiceData(Invoices);
-        console.log("Invoice", Invoices)
+        
 
 
-        const Rest = await invoke('get_vendor_rest', {
-          vId: vendor.id,
-          startDate: null, // Use default start date
-          endDate: null    // Use default end date (current date)
-        }) as Rester | null;
+        const Rest = await Promise;
 
-        console.log("Rest", Rest)
+        
 
         setVendor(prev => prev ? { ...prev, rest: Rest ? Rest.rest : 0 } : prev);
 
 
-        console.log('Vendor data fetched:', {
-          BLs: BLs,
-          Invoices: Invoices
-        });
-
       } catch (error) {
-        console.error('Error fetching vendor data:', error);
+        
         handleError(t('vendorDetails.loadingFailed'));
       } finally {
         setLoadingData(false);
@@ -530,14 +521,14 @@ const VendorDetails = () => {
         region: editForm.region.trim()
       };
 
-      await invoke('update_vendor', vendorData);
+      await Promise;
 
       // Update local state with trimmed values
       setVendor({ ...editForm });
       setIsEditing(false);
       handleSuccess(t('vendorDetails.updateSuccess'));
     } catch (error) {
-      console.error('Failed to update vendor:', error);
+      
       handleError(t('vendorDetails.updateFailed'));
     } finally {
       setLoading(false);
@@ -550,14 +541,14 @@ const VendorDetails = () => {
 
     setLoading(true);
     try {
-      await invoke('delete_vendor', { vId: vendor.id });
+      await Promise;
       handleSuccess(t('vendorDetails.deleteSuccess'));
 
       setTimeout(() => {
         navigate(-1);
       }, 2000);
     } catch (error) {
-      console.error('Failed to delete vendor:', error);
+      
 
       // Better error handling
       let errorMessage = t('vendorDetails.deleteFail');
@@ -662,7 +653,7 @@ const VendorDetails = () => {
 
     const printWindow = window.open('', '_blank', 'width=800,height=600');
     if (!printWindow) {
-      console.error('Unable to open print window');
+      
       return;
     }
 

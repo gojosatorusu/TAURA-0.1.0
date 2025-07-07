@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Trash2, AlertTriangle, UserX, ArrowUpCircle, DollarSign, ArrowDownCircle, TrendingUp, AlertCircle, TrendingDown, Printer, Calendar, BarChart3 } from 'lucide-react';
 import { createPortal } from 'react-dom';
-import { invoke } from "@tauri-apps/api/core";
 import { useI18n } from '../Pages/context/I18nContext';
 
 
@@ -193,14 +192,10 @@ export const StockSummaryModal: React.FC<StockSummaryModalProps> = ({
 
     setFetchingData(true);
     try {
-      // Replace with your actual Tauri invoke call
-      const summaries = await invoke('get_product_summary', {
-        startDate,
-        endDate,
-      }) as ProductSummary[];
+      const summaries = await Promise;
       setProductSummaries(summaries);
     } catch (error) {
-      console.error('Failed to fetch product summaries:', error);
+      
       setProductSummaries([]);
     } finally {
       setFetchingData(false);
@@ -575,7 +570,7 @@ export const StockSummaryModal: React.FC<StockSummaryModalProps> = ({
     // Create a new window for printing
     const printWindow = window.open('', '_blank', 'width=800,height=600');
     if (!printWindow) {
-      console.error('Unable to open print window');
+      
       return;
     }
 
@@ -1094,7 +1089,7 @@ export const FinalizeSaleModal: React.FC<SaleModalProps> = ({ isOpen, onClose, s
                       <motion.button
                         whileHover={{ scale: 1.02, y: -2 }}
                         whileTap={{ scale: 0.98 }}
-                        onClick={() => {onConfirm(); console.log("it's going good ")}}
+                        onClick={() => {onConfirm(); }}
                         disabled={loading}
                         className="flex-1 flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-500/80 to-cyan-500/80 hover:from-blue-500 hover:to-cyan-500 disabled:from-blue-600/50 disabled:to-cyan-600/50 text-white font-semibold rounded-2xl transition-all duration-200 backdrop-blur-sm border border-blue-400/20 shadow-lg shadow-blue-500/20"
                       >
@@ -1201,7 +1196,7 @@ export const FinalizePurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, on
                       <motion.button
                         whileHover={{ scale: 1.02, y: -2 }}
                         whileTap={{ scale: 0.98 }}
-                        onClick={() => {onConfirm(); console.log("it's going good ")}}
+                        onClick={() => {onConfirm(); }}
                         disabled={loading}
                         className="flex-1 flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-500/80 to-cyan-500/80 hover:from-blue-500 hover:to-cyan-500 disabled:from-blue-600/50 disabled:to-cyan-600/50 text-white font-semibold rounded-2xl transition-all duration-200 backdrop-blur-sm border border-blue-400/20 shadow-lg shadow-blue-500/20"
                       >

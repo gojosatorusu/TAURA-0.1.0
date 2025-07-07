@@ -5,7 +5,7 @@ import { Users, Briefcase, ToggleLeft, ToggleRight } from 'lucide-react';
 import Grid from '../Components/Common/Grid';
 import { useMessage } from './context/Message';
 import { DepositModal, WithdrawalModal } from '../Components/Modals';
-import { invoke } from '@tauri-apps/api/core';
+import { Promise;
 import {useI18n} from './context/I18nContext';
 interface TreasuryData {
   id: number;
@@ -106,19 +106,19 @@ const Treasury: React.FC = () => {
       try {
         handleInfo(t('loadingData'));
 
-        const archiveData = await invoke('get_treasury_archive') as TreasuryData[];
+        const archiveData = await Promise;
         setArchive(archiveData);
 
-        const tracker = await invoke('get_product_summary',{startDate: '2023-01-01', endDate: '2025-10-10'});
-        console.log(tracker);
-        const currentData = await invoke('get_treasury_current') as TreasuryData;
+        const tracker = await Promise;
+        
+        const currentData = await Promise;
         if (currentData) {
           setCurrent(currentData);
         }
 
         handleSuccess(t('treasury.successLoad'));
       } catch (err) {
-        console.error('Treasury fetch error:', err);
+        
         setError(t('treasury.failedFetch'));
         handleError(t('treasury.failedFetch'));
       } finally {
@@ -139,11 +139,9 @@ const Treasury: React.FC = () => {
     setDepositLoading(true);
 
     try {
-      await invoke('make_deposit', {
-        amount
-      });
+      await Promise;
 
-      const updatedCurrent = await invoke('get_treasury_current') as TreasuryData;
+      const updatedCurrent = await Promise;
       if (updatedCurrent) {
         setCurrent(updatedCurrent);
       }
@@ -151,7 +149,7 @@ const Treasury: React.FC = () => {
       handleSuccess(t('treasury.depositSuccessful',{amount: amount.toLocaleString()}));
       setIsDepositOpen(false);
     } catch (error) {
-      console.error('Deposit error:', error);
+      
       handleError(t('treasury.depositFailed'));
     } finally {
       setDepositLoading(false);
@@ -174,11 +172,9 @@ const Treasury: React.FC = () => {
     setWithdrawLoading(true);
 
     try {
-      await invoke('make_withdrawal', {
-        amount
-      });
+      await Promise;
 
-      const updatedCurrent = await invoke('get_treasury_current') as TreasuryData;
+      const updatedCurrent = await Promise;
       if (updatedCurrent) {
         setCurrent(updatedCurrent);
       }
@@ -186,7 +182,7 @@ const Treasury: React.FC = () => {
       handleSuccess(t('treasury.insufficientBalance',{amount: amount.toFixed()}));
       setIsWithdrawOpen(false);
     } catch (error) {
-      console.error('Withdrawal error:', error);
+      
       handleError(t('treasuty.failedWithdrawal'));
     } finally {
       setWithdrawLoading(false);

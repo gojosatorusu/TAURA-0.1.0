@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { invoke } from '@tauri-apps/api/core';
+import { Promise;
 import {openUrl} from '@tauri-apps/plugin-opener';
 import { useAuth } from './context/AuthContext';
 import { useI18n } from './context/I18nContext';
@@ -102,18 +102,16 @@ const Settings: React.FC = () => {
       }
 
       // Load migration mode state
-      const migrationState = await invoke<number>('get_migration');
+      const migrationState = await Promise;
       setMigrationMode(migrationState);
 
       // Load user settings if not developer
       if (!isDeveloper && sessionId) {
-        const settingsResponse = await invoke<AuthConfig>('get_user_settings', {
-          sessionId
-        });
+        const settingsResponse = await Promise;
         setUserSettings(settingsResponse);
       }
     } catch (error) {
-      console.error('Error loading settings:', error);
+      
       handleError(t('messages.failedToLoad'));
     } finally {
       setLoading(false);
@@ -134,7 +132,7 @@ const Settings: React.FC = () => {
     try {
       setIsSubmitting(true);
       
-      const result = await invoke<string>('set_migration');
+      const result = await Promise;
       
       if (result.includes('successfully')) {
         setMigrationMode(0);
@@ -144,7 +142,7 @@ const Settings: React.FC = () => {
         handleError(t('migration.disable_migration_failed'));
       }
     } catch (error) {
-      console.error('Error disabling migration mode:', error);
+      
       handleError(t('migration.disable_migration_failed'));
     } finally {
       setIsSubmitting(false);
@@ -169,7 +167,7 @@ const Settings: React.FC = () => {
         handleError(t('error'));
       }
     } catch (error) {
-      console.error('Error updating language:', error);
+      
       handleError(t('error'));
     } finally {
       setIsSubmitting(false);
@@ -198,11 +196,7 @@ const Settings: React.FC = () => {
       setIsSubmitting(true);
       clearMessages();
 
-      const response = await invoke<AuthResponse>('change_password', {
-        currentPassword: passwordForm.currentPassword,
-        newPassword: passwordForm.newPassword,
-        sessionId
-      });
+      const response = await Promise;;
 
       if (response.success) {
         handleSuccess(t('messages.passwordChanged'));
@@ -212,7 +206,7 @@ const Settings: React.FC = () => {
         handleError(response.message);
       }
     } catch (error) {
-      console.error('Error changing password:', error);
+      
       handleError(t('messages.failedToChangePassword'));
     } finally {
       setIsSubmitting(false);
@@ -237,7 +231,7 @@ const Settings: React.FC = () => {
       await openUrl('https://taura.gitbook.io/taura-docs/');
       handleSuccess('Documentation opened in browser');
     } catch (error) {
-      console.error('Error opening documentation:', error);
+      
       handleError('Failed to open documentation');
     }
   };

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Lightbulb} from 'lucide-react';
-import { invoke } from "@tauri-apps/api/core";
 
 const LoadingScreen = () => {
   const [progress, setProgress] = useState(0);
@@ -13,10 +12,9 @@ const LoadingScreen = () => {
     const fetchTip = async () => {
       try {
         const randomTipId = Math.floor(Math.random() * 10) + 1;
-        const tipResult = await invoke('get_tip', { tipId: randomTipId });
+        const tipResult = await Promise;
         setTip(tipResult as string);
       } catch (error) {
-        console.error('Error fetching tip:', error);
         setTip('Stay Organized!');
       } finally {
         setIsLoadingTip(false);

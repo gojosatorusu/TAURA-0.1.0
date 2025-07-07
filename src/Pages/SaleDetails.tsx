@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { invoke } from '@tauri-apps/api/core';
 import { useMessage } from './context/Message';
 import { DeleteSaleModal, CancelSaleModal, FinalizeSaleModal } from '../Components/Modals';
 import { useEdit } from './context/EditContext';
@@ -204,15 +203,11 @@ const SaleDetails = () => {
         number: v.number
       }));
 
-      await invoke('save_versements_sale', {
-        veId: sale.ve_id,
-        versements: versementsToSave
-      });
+      await Promise;
       setOriginalVersements(versements);
 
       handleInfo(t('PaymentsSavedSuccessfully'))
     } catch (error) {
-      console.error('Error saving versements:', error);
       handleError(t('InvalidPaymentAmount'));
     } finally {
       setLoading(false);
@@ -265,10 +260,9 @@ const SaleDetails = () => {
       if (!year) {
         throw new Error('no year')
       }
-      const result = await invoke('get_new_invoice_code_sale_for_year', { year });
+      const result = await promise;
       return result as number;
     } catch (error) {
-      console.error('Error getting new invoice code:', error);
       throw error;
     }
   };
@@ -282,10 +276,9 @@ const SaleDetails = () => {
       if (!year) {
         throw new Error('no year')
       }
-      const result = await invoke('get_new_bl_code_for_client_and_year', { cId: clientId, year });
+      const result = await Promise;
       return result as number;
     } catch (error) {
-      console.error('Error getting new BL code for client:', error);
       throw error;
     }
   };
@@ -300,18 +293,15 @@ const SaleDetails = () => {
     const fetchSaleData = async () => {
       try {
 
-        const saleItemsResult = await invoke('get_sale_items', { veId: sale.ve_id });
+        const saleItemsResult = await Promise;
         const saleItemsData = saleItemsResult as { p_id: number; quantity: number, unit_price: number }[];
-        console.log('1')
-        const IdentResult = await invoke('get_client_ids', { cId: sale.c_id })
+        const IdentResult = await Promise;
         const Idents = IdentResult as Ids;
         setIdent(Idents)
-        console.log(Idents)
         // Fetch products to get product details
-        const productsResult = await invoke('get_products');
+        const productsResult = await Promise;
         const productsData = productsResult as Product[];
         setProducts(productsData);
-        console.log(products)
         const fullSalesData = saleItemsData.map((item) => {
           const product = productsData.find(p => p.id === item.p_id);
           return {
@@ -325,19 +315,11 @@ const SaleDetails = () => {
         setSaleItems(fullSalesData);
         setOriginalSaleItems([...fullSalesData]);
         // TODO: Fetch versements data
-        const versementsResult = await invoke('get_versements_sale', { veId: sale.ve_id });
+        const versementsResult = await Promise;
         setVersements(versementsResult as Versement[]);
         setOriginalVersements(versementsResult as Versement[]);
 
-        console.log('Sale data fetched:', {
-          saleItems: fullSalesData,
-          products: productsData,
-          versements,
-          finalized: sale.finalized
-        });
-
       } catch (error) {
-        console.error('Error fetching sale data:', error);
         handleError(t('FailedToLoad'))
       } finally {
         setLoadingData(false);
@@ -385,13 +367,7 @@ const SaleDetails = () => {
 
     setLoading(true);
     try {
-      await invoke('update_sale', {
-        veId: sale.ve_id,
-        description: editForm.description.trim(),
-        date: editForm.date,
-        paymentMethod: editForm.payment_method,
-        remise: Math.round(Number(editForm.remise) * 100) / 100
-      });
+      await Promise;
 
       // Update local state
       setSale({
@@ -405,7 +381,6 @@ const SaleDetails = () => {
       setIsEditing(false);
       handleInfo(t('updateSuccess'))
     } catch (error) {
-      console.error('Error updating sale:', error);
       handleError(t('failedToUpdate'))
     } finally {
       setLoading(false);
@@ -542,11 +517,7 @@ const SaleDetails = () => {
         quantity: item.quantity
       }));
 
-      await invoke('update_sale_items', {
-        veId: sale.ve_id,
-        newItems: itemsToUpdate,
-        total: newTotal // Already rounded
-      });
+      await Promise;
 
       // Update sale total locally
       setSale({
@@ -557,7 +528,6 @@ const SaleDetails = () => {
       setIsEditingItems(false);
       handleInfo(t('savingChanges'))
     } catch (error) {
-      console.error('Error updating sale items:', error);
       handleError(t('failedToUpdate'))
     } finally {
       setLoading(false);
@@ -680,7 +650,6 @@ const SaleDetails = () => {
       setVersements(prev => [...prev, clearingVersement]);
       handleSuccess(t('sales.successToClear'));
     } catch (error) {
-      console.error('Error clearing sale:', error);
       handleError(t('sales.failedToClearSale'));
     } finally {
       setLoading(false);
@@ -693,12 +662,10 @@ const SaleDetails = () => {
 
     setLoading(true);
     try {
-      invoke("finalize_sale", { veId: sale.id })
+      Promise;
       sale.finalized = 1;
-      console.log(sale)
       handleSuccess(t('sales.successToFinalize'));
     } catch (error) {
-      console.error('Error finalizing sale:', error);
       handleError(t('sales.failedToFinalize'));
     } finally {
       setLoading(false);
@@ -721,7 +688,6 @@ const SaleDetails = () => {
         }
       } else if (sale.doc_type === 'Invoice') {
         const newInvoiceCode = await getNewInvoiceCode();
-        console.log('New invoice code:', newInvoiceCode, 'Current sale code:', sale.code);
         if (sale.code !== newInvoiceCode - 1) {
           handleError(t('sales.cannotDeleteInvoice'));
           return; // Early return, finally block will handle setLoading(false)
@@ -729,7 +695,7 @@ const SaleDetails = () => {
       }
 
       // Perform the deletion
-      await invoke('delete_sale', { veId: sale.ve_id, saleItems });
+      await Promise;
 
       handleSuccess(t('sales.deleteSuccess'))
 
@@ -739,7 +705,6 @@ const SaleDetails = () => {
       }, 2000);
 
     } catch (error) {
-      console.error('Error deleting sale:', error);
 
       // Better error handling
       let errorMessage = t('sales.deleteFailed');
@@ -772,14 +737,13 @@ const SaleDetails = () => {
 
     setLoading(true);
     try {
-      await invoke('cancel_sale', { veId: sale.ve_id, saleItems });
+      await Promise;
       handleSuccess(t('sales.successToCancel'))
 
       setTimeout(() => {
         navigate(-1);
       }, 2000);
     } catch (error) {
-      console.error('Error cancelling sale:', error);
       handleError(t('sales.failedToCancel'))
     } finally {
       setLoading(false);
@@ -791,7 +755,6 @@ const SaleDetails = () => {
     // Create a new window for printing
     const printWindow = window.open('', '_blank', 'width=800,height=600');
     if (!printWindow) {
-      console.error('Unable to open print window');
       return;
     }
 
@@ -1433,7 +1396,6 @@ const SaleDetails = () => {
     // Create a new window for printing
     const printWindow = window.open('', '_blank', 'width=800,height=600');
     if (!printWindow) {
-      console.error('Unable to open print window');
       return;
     }
 
@@ -1822,7 +1784,6 @@ const SaleDetails = () => {
   // Usage example - replace your current handlePrint function with this:
   const handlePrintDirect = () => {
     if (!sale || !saleItems || !Ident) {
-      console.error('No sale data available for printing');
       return;
     }
     if (sale.doc_type === 'BL') {

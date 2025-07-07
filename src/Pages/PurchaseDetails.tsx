@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { invoke } from '@tauri-apps/api/core';
 import { useMessage } from './context/Message';
 import { DeletePurchaseModal, CancelPurchaseModal, FinalizePurchaseModal } from '../Components/Modals';
 import { useI18n } from './context/I18nContext';
@@ -206,15 +205,11 @@ const PurcDetails = () => {
         number: v.number
       }));
 
-      await invoke('save_versements_purchase', {
-        aId: purc.a_id,
-        versements: versementsToSave
-      });
+      await Promise;
       setOriginalVersements(versements);
 
       handleInfo(t('PaymentsSavedSuccessfully'))
     } catch (error) {
-      console.error('Error saving versements:', error);
       handleError(t('InvalidPaymentAmount'));
     } finally {
       setLoading(false);
@@ -270,14 +265,12 @@ const PurcDetails = () => {
       if (!year) {
         throw new Error('no year')
       }
-      const result = await invoke('get_new_invoice_code_purchase_for_year', { year });
+      const result = await Promise;
       return result as number;
     } catch (error) {
-      console.error('Error getting new invoice code:', error);
       throw error;
     }
   };
-  console.log(purc)
   // Function to get new BL code for a specific vendor
   const getNewBLCodeForVendor = async (vendorId: number) => {
     try {
@@ -288,10 +281,9 @@ const PurcDetails = () => {
       if (!year) {
         throw new Error('no year')
       }
-      const result = await invoke('get_new_bl_code_for_vendor_and_year', { vId: vendorId, year });
+      const result = await Promise;
       return result as number;
     } catch (error) {
-      console.error('Error getting new BL code for vendor:', error);
       throw error;
     }
   };
@@ -306,13 +298,13 @@ const PurcDetails = () => {
     const fetchPurcData = async () => {
       try {
         // Fetch purc items
-        const purcItemsResult = await invoke('get_purchase_items', { aId: purc.a_id });
+        const purcItemsResult = await Promise;
         const purcItemsData = purcItemsResult as { r_id: number; quantity: number; unit_price: number }[];
-        const IdentResult = await invoke('get_vendor_ids', { vId: purc.v_id })
+        const IdentResult = await Promise
         const Idents = IdentResult as Ids;
         setIdent(Idents)
         // Fetch raws to get raw details
-        const rawResult = await invoke('get_raw_materials');
+        const rawResult = await Promise;
         const rawData = rawResult as Raw[]
 
         setRaws(rawData);
@@ -330,18 +322,11 @@ const PurcDetails = () => {
         setOriginalPurcItems([...fullPurcsData]);
 
         // TODO: Fetch versements data
-        const versementsResult = await invoke('get_versements_purchase', { aId: purc.a_id });
+        const versementsResult = await Promise;
         setVersements(versementsResult as Versement[]);
         setOriginalVersements(versementsResult as Versement[]);
 
-
-        console.log('Purc data fetched:', {
-          purcItems: fullPurcsData,
-          raws: rawData
-        });
-
       } catch (error) {
-        console.error('Error fetching purc data:', error);
         handleError(t('failedToLoad'))
       } finally {
         setLoadingData(false);
@@ -400,13 +385,7 @@ const PurcDetails = () => {
     setLoading(true);
     try {
       handleInfo(t('purchase.updatePurchaseDetails'))
-      await invoke('update_purchase', {
-        aId: purc.a_id,
-        description: editForm.description.trim(),
-        date: editForm.date,
-        paymentMethod: editForm.payment_method,
-        remise: remiseValue
-      });
+      await Promise;
 
       // Update local state
       setPurc({
@@ -419,7 +398,6 @@ const PurcDetails = () => {
 
       setIsEditing(false);
     } catch (error) {
-      console.error('Error updating purchase:', error);
       handleError(t('purchase.failedToUpdate'))
     } finally {
       setLoading(false);
@@ -509,11 +487,7 @@ const PurcDetails = () => {
         quantity: item.quantity
       }));
 
-      await invoke('update_purchase_items', {
-        aId: purc.a_id,
-        newItems: itemsToUpdate,
-        total: newTotal // Send the full total to database
-      });
+      await Promise;
 
       // Update purc total locally
       setPurc({
@@ -523,7 +497,6 @@ const PurcDetails = () => {
 
       setIsEditingItems(false);
     } catch (error) {
-      console.error('Error updating purchase items:', error);
       handleError(t('purchase.failedToUpdateItems'))
     } finally {
       setLoading(false);
@@ -644,7 +617,6 @@ const PurcDetails = () => {
       setVersements(prev => [...prev, clearingVersement]);
       handleSuccess(t('purchase.successToClear'));
     } catch (error) {
-      console.error('Error clearing purc:', error);
       handleError(t('purchase.failedToClear'));
     } finally {
       setLoading(false);
@@ -667,7 +639,6 @@ const PurcDetails = () => {
         }
       } else if (purc.doc_type === 'Invoice') {
         const newInvoiceCode = await getNewInvoiceCode();
-        console.log('New invoice code:', newInvoiceCode, 'Current purc code:', purc.code);
         if (purc.code !== newInvoiceCode - 1) {
           handleError(t('notLatestInvoice'));
           return; // Early return, finally block will handle setLoading(false)
@@ -675,7 +646,7 @@ const PurcDetails = () => {
       }
 
       // Perform the deletion
-      await invoke('delete_purchase', { aId: purc.a_id, purchaseItems: purcItems });
+      await Promise;
 
       handleSuccess(t('purchase.failedToDelete'));
 
@@ -687,7 +658,6 @@ const PurcDetails = () => {
       }, 4000);
 
     } catch (error) {
-      console.error('Error deleting purc:', error);
 
       // Better error handling
       let errorMessage = t('purchase.failedToDelete');
@@ -711,11 +681,10 @@ const PurcDetails = () => {
 
     setLoading(true);
     try {
-      invoke("finalize_purchase", { aId: purc.id })
+      Promise;
       purc.finalized = 1;
       handleSuccess(t('purchase.successToFinalize'));
     } catch (error) {
-      console.error('Error finalizing sale:', error);
       handleError(t('purchase.failedToFinalize'));
     } finally {
       setLoading(false);
@@ -735,7 +704,7 @@ const PurcDetails = () => {
 
     setLoading(true);
     try {
-      await invoke('cancel_purchase', { aId: purc.a_id, purchaseItems: purcItems });
+      await Promise;
       handleSuccess(t('purchase.successToCancel'));
 
 
@@ -747,7 +716,6 @@ const PurcDetails = () => {
         navigate(-1);
       }, 4000);
     } catch (error) {
-      console.error('Error cancelling purchase:', error);
       handleError(t('purchase.failedToCancel'));
     } finally {
       setLoading(false);
@@ -759,7 +727,6 @@ const PurcDetails = () => {
     // Create a new window for printing
     const printWindow = window.open('', '_blank', 'width=800,height=600');
     if (!printWindow) {
-      console.error('Unable to open print window');
       return;
     }
 
@@ -1293,7 +1260,6 @@ const PurcDetails = () => {
     // Create a new window for printing
     const printWindow = window.open('', '_blank', 'width=800,height=600');
     if (!printWindow) {
-      console.error('Unable to open print window');
       return;
     }
 
@@ -1819,11 +1785,9 @@ const PurcDetails = () => {
 
   const handlePrintDirect = () => {
     if (!purc || !purcItems || !Ident) {
-      console.error('No purc data available for printing');
       handleError(t('purchase.noPurchaseDateToPrint'))
       return;
     }
-    console.log(Ident.location, '  hhh   ', Ident.phone)
     if (purc.status == 'Approved') {
       handleBCPrint(purc, purcItems, Ident);
     }

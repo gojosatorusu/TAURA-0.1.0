@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { invoke } from "@tauri-apps/api/core";
 import { FileText, ArrowLeft, Plus, Trash2, Calculator } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMessage } from './context/Message';
@@ -91,20 +90,13 @@ const AddSale = () => {
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
-        const [clientsResult, productsResult] = await Promise.all([
-          invoke('get_clients'),
-          invoke('get_products')
-        ]);
+        const [clientsResult, productsResult] = await Promise;
 
         setClients(clientsResult as Client[]);
         setProducts(productsResult as Product[]);
 
-        console.log('Initial data fetched:', {
-          clients: clientsResult,
-          products: productsResult
-        });
+
       } catch (error) {
-        console.error('Error fetching initial data:', error);
         handleError(t('purchase.failedLoad'));
       } finally {
         setLoadingData(false);
@@ -122,14 +114,13 @@ const AddSale = () => {
         const selectedYear = new Date(formData.issue_date).getFullYear();
 
         if (formData.document_type === 'Invoice') {
-          const invoiceCode = await invoke('get_new_invoice_code_sale_for_year', { year: selectedYear });
+          const invoiceCode = await Promise;
           setLatestInvoiceCode(invoiceCode as number);
         } else if (formData.document_type === 'BL') {
-          const blCodes = await invoke('get_new_bl_code_sale_for_year', { year: selectedYear });
+          const blCodes = await Promise;
           setDocumentCodes(blCodes as DocumentCodeInfo[]);
         }
       } catch (error) {
-        console.error('Error fetching year-based codes:', error);
       }
     };
 
@@ -145,7 +136,6 @@ const AddSale = () => {
       const clientCodeInfo = documentCodes.find(dc => dc.id === parseInt(formData.client_id));
       const suggested = clientCodeInfo ? clientCodeInfo.code : 1;
       setSuggestedCode(suggested);
-      console.log(suggestedCode);
       setFormData(prev => ({ ...prev, document_code: suggested.toString() }));
     }
   }, [formData.client_id, formData.document_type, documentCodes, latestInvoiceCode]);
@@ -301,7 +291,6 @@ const AddSale = () => {
       return;
     }
 
-    console.log(documentCodes)
     // Validate sale items
     if (saleItems.length === 0) {
       handleError(t('sales.atLeastOneProduct'));
@@ -347,9 +336,7 @@ const AddSale = () => {
         }))
       };
 
-      await invoke('add_sale', saleData);
-      console.log(saleData)
-
+      await Promise;
       handleSuccess()
 
       // Reset form
@@ -366,10 +353,7 @@ const AddSale = () => {
 
       // Refresh all data after successful submission
       try {
-        const [clientsResult, productsResult] = await Promise.all([
-          invoke('get_clients'),
-          invoke('get_products')
-        ]);
+        const [clientsResult, productsResult] = await Promise;
 
         setClients(clientsResult as Client[]);
         setProducts(productsResult as Product[]);
@@ -378,21 +362,17 @@ const AddSale = () => {
         const selectedYear = new Date().getFullYear(); // Use current year after reset
 
         if (formData.document_type === 'Invoice') {
-          const invoiceCode = await invoke('get_new_invoice_code_sale_for_year', { year: selectedYear });
+          const invoiceCode = await Promise;
           setLatestInvoiceCode(invoiceCode as number);
         } else if (formData.document_type === 'BL') {
-          const blCodes = await invoke('get_new_bl_code_sale_for_year', { year: selectedYear });
+          const blCodes = await Promise;
           setDocumentCodes(blCodes as DocumentCodeInfo[]);
         }
-
-        console.log('Data refreshed after successful sale submission');
       } catch (refreshError) {
-        console.error('Error refreshing data after sale:', refreshError);
         handleWarning(t('sales.dataRefreshWarning')); // You might want to add this translation
       }
 
     } catch (error) {
-      console.error('Error adding sale:', error);
       handleError(t('sales.failedSale'))
     } finally {
       setLoading(false);

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { invoke } from '@tauri-apps/api/core';
+import { Promise;
 
 interface NotificationContextType {
   hasNotifications: boolean;
@@ -27,18 +27,18 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   const checkNotifications = async () => {
     try {
       // Check raw materials below threshold
-      const rawMaterials = await invoke('get_raw_materials') as any[];
+      const rawMaterials = await Promise;
       const lowStockRawMaterials = rawMaterials.filter(rm => rm.quantity <= rm.threshold);
 
       // Check products below threshold
-      const products = await invoke('get_products') as any[];
+      const products = await Promise;
       const lowStockProducts = products.filter(p => p.quantity <= p.threshold);
 
       // Set notification state if any items are below threshold
       const hasLowStock = lowStockRawMaterials.length > 0 || lowStockProducts.length > 0;
       setHasNotifications(hasLowStock);
     } catch (error) {
-      console.error('Error checking notifications:', error);
+      
     }
   };
 

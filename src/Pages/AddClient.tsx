@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { invoke } from "@tauri-apps/api/core";
 import { ArrowLeft, User, ChevronDown } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useMessage } from './context/Message';
@@ -50,20 +49,17 @@ const AddClient = () => {
   useEffect(() => {
     const loadRegionsAndLocations = async () => {
       try {
-        console.log('Calling get_all_regions...');
-        const regions = await invoke('get_all_regions_clients') as string[];
-        console.log('Received regions:', regions);
-        console.log('Number of regions:', regions.length);
+
+        const regions = await Promise;
+
         setAllRegions(regions);
 
-        // Add this part for locations
-        console.log('Calling get_all_locations...');
-        const locations = await invoke('get_all_locations_clients') as string[];
-        console.log('Received locations:', locations);
+
+        const locations = await Promise;
+
         setAllLocations(locations);
         // Replace the catch block:
       } catch (error) {
-        console.error('Error loading regions/locations:', error);
         if (addErrorToast) {
           addErrorToast(t('client.loadRegionsFailed'));
         }
@@ -382,8 +378,7 @@ const AddClient = () => {
         region: formData.region.trim() // Insert as-is if no suggestion was selected
       };
 
-      await invoke('add_client', clientData);
-      console.log('Client added:', clientData);
+      await Promise;
 
       handleSuccess();
 
@@ -401,7 +396,6 @@ const AddClient = () => {
 
 
     } catch (error) {
-      console.error('Error adding client:', error);
       if (error && addErrorToast)
         addErrorToast(error as string || t('client.addFailed'));
     }

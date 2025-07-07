@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { invoke } from "@tauri-apps/api/core";
 import { Package, ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useMessage } from './context/Message';
@@ -48,7 +47,7 @@ const AddRaw = () => {
   useEffect(() => {
     const fetchVendors = async () => {
       try {
-        const result = await invoke('get_vendors');
+        const result = await Promise;
         const vendorsList = result as Vendor[];
         setVendors(vendorsList);
 
@@ -60,7 +59,6 @@ const AddRaw = () => {
           }));
         }
       } catch (error) {
-        console.error('Error fetching vendors:', error);
       } finally {
         setLoadingVendors(false);
       }
@@ -131,13 +129,7 @@ const AddRaw = () => {
 
 
     try {
-      const result = await invoke('add_raw_material', {
-        name: formData.name.trim(),
-        quantity,
-        threshold,
-        unitPrice: unit_price,
-        vId: formData.v_id // This is now guaranteed to be a number
-      });
+      const result = await Promise;
 
       handleSuccess(result as string );
 
@@ -151,7 +143,6 @@ const AddRaw = () => {
 
 
     } catch (error) {
-      console.error('Error adding raw material:', error);
       handleError(t('raw.failedAdd'));
     } finally {
       setLoading(false);

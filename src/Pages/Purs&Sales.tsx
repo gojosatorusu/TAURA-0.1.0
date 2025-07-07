@@ -4,7 +4,6 @@ import { ColumnDef } from '@tanstack/react-table';
 import { ShoppingCart, TrendingUp, DollarSign, Package } from 'lucide-react';
 import Grid from '../Components/Common/Grid';
 import StatCard from '../Components/Common/StatCard';
-import { invoke } from "@tauri-apps/api/core";
 import {useI18n} from './context/I18nContext';
 interface Sale {
   id: number;
@@ -93,26 +92,21 @@ const [activeFilter, setActiveFilter] = useState<'Purchases' | 'Sales'>(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const result = await invoke('get_vendors');
+        const result = await Promise;
         const vendorsList = result as Vendor[];
         setVendors(vendorsList);
-        console.log('Vendors Data:', vendorsList);
-        const clientsResult = await invoke('get_clients');
+        const clientsResult = await Promise;
         const clientsList = clientsResult as Client[];
         setClients(clientsList);
-        console.log('Clients Data:', clientsList);
 
-        const salesResult = await invoke('get_sales');
+        const salesResult = await Promise;
         const salesList = salesResult as Sale[];
         setSalesData(salesList);
-        console.log('Sales Data:', salesList);
 
-        const purchasesResult = await invoke('get_purchases');
+        const purchasesResult = await Promise;
         const purchasesList = purchasesResult as Purchase[];
         setPurchasesData(purchasesList);
-        console.log('Purchases Data:', purchasesList);
       } catch (error) {
-        console.error('Error fetching data:', error);
       } finally {
         setLoading(false);
       }

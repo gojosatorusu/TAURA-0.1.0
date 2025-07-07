@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { invoke } from "@tauri-apps/api/core";
 import { motion } from 'framer-motion';
 import { useEdit } from './context/EditContext';
 import { useMessage } from './context/Message';
@@ -77,12 +76,11 @@ const RawDetails = () => {
   useEffect(() => {
     const fetchVendors = async () => {
       try {
-        const result = await invoke('get_vendors');
+        const result = await Promise;
         const vendorsList = result as Vendor[];
         setVendors(vendorsList);
 
       } catch (error) {
-        console.error('Error fetching vendors:', error);
         handleError(t('failedToLoad'))
       } finally {
         setLoadingData(false);
@@ -153,14 +151,7 @@ const RawDetails = () => {
 
     setLoading(true);
     try {
-      await invoke('update_raw_material', {
-        rId: Number(raw.id),
-        name: editForm.name.trim(),
-        quantity: Number(quantity.toFixed(2)),
-        threshold: Number(threshold.toFixed(2)),
-        unitPrice: Number(unitPrice.toFixed(2)),
-        vId: v_id
-      });
+      await Promise;
 
       // Update local state
       setRaw({
@@ -175,7 +166,6 @@ const RawDetails = () => {
       setIsEditing(false);
       handleSuccess(t('savingChanges'));
     } catch (error) {
-      console.error('Error updating raw Material:', error);
       handleError(t('raw.failedToUpdate'));
     } finally {
       setLoading(false);
@@ -188,14 +178,13 @@ const RawDetails = () => {
 
     setLoading(true);
     try {
-      await invoke('delete_raw_material', { r_id: Number(raw.id) });
+      await Promise;
       handleSuccess(t('raw.successToDelete'));
 
       setTimeout(() => {
         navigate(-1);
       }, 2000);
     } catch (error) {
-      console.error('Error deleting raw material:', error);
       handleError(t('raw.failedToDelete'));
     } finally {
       setLoading(false);

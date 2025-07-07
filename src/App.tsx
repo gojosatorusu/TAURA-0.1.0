@@ -33,7 +33,7 @@ import { AuthProvider, useAuth } from './Pages/context/AuthContext.tsx';
 import ToastPortal from './Components/ToastPortal.tsx';
 import Chat from './Pages/chat.tsx';
 
-// Animation variants matching your ClientsVendors page style
+
 const pageVariants = {
   initial: {
     opacity: 0,
@@ -274,12 +274,12 @@ function App() {
 const AppContent = () => {
   const { isAuthenticated, isInitialized } = useAuth();
 
-  // Show setup page if app hasn't been initialized yet
+
   if (!isInitialized) {
     return <SetupPage />;
   }
 
-  // Show login page if initialized but not authenticated
+
   if (!isAuthenticated) {
     return (
       <I18nProvider>

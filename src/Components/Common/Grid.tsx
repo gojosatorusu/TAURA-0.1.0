@@ -228,7 +228,7 @@ const Grid = <T extends Record<string, any>>({
     if (advancedFilters.documentType !== 'all' || advancedFilters.documentNumber) {
       const docType = rowData.doc_type  // Use doc_type field from your sales data
       const code = String(rowData.code)  // The actual document number/code
-      console.log(code)
+      
       if (advancedFilters.documentType === 'BL') {
         if (docType !== 'BL') return false
         if (advancedFilters.documentNumber && !code?.toLowerCase().includes(advancedFilters.documentNumber.toLowerCase())) {
@@ -272,7 +272,7 @@ const Grid = <T extends Record<string, any>>({
     // General code search (searches in the code field)
     if (advancedFilters.codeSearch) {
       const code = String(rowData.code)
-      console.log(code)
+      
       if (!code?.toLowerCase().includes(advancedFilters.codeSearch.toLowerCase())) {
         return false
       }
@@ -326,7 +326,6 @@ const Grid = <T extends Record<string, any>>({
     return value !== ''
   })
 
-  // Added missing getPaymentStatusLabel function
   const getPaymentStatusLabel = (currentPaid: number = 0, total: number = 0, remise: number = 0) => {
     // Calculate the discounted total (same as in your first file)
     const discountedTotal = total * (100 - remise) / 100;

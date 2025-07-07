@@ -111,7 +111,7 @@ const Sidebar = () => {
         try {
             await logout();
         } catch (error) {
-            console.error('Logout error:', error);
+            
             addToast({
                 message: t('errorLoggingOut'),
                 type: 'error',

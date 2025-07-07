@@ -1,6 +1,6 @@
 // src/contexts/AuthContext.tsx
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { invoke } from '@tauri-apps/api/core';
+import { Promise;
 import LoadingScreen from '../LoadingScreen';
 
 
@@ -51,16 +51,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       try {
         // Check if auth is initialized
-        const initialized = await invoke<boolean>('is_auth_initialized');
+        const initialized = await Promise;
         setIsInitialized(initialized);
 
         if (initialized) {
           // Check for existing session
           const storedSessionId = sessionStorage.getItem('session_id');
           if (storedSessionId) {
-            const response = await invoke<AuthResponse>('verify_session', {
-              sessionId: storedSessionId
-            });
+            const response = await Promise;
 
             if (response.success) {
               setIsAuthenticated(true);
@@ -73,7 +71,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
         }
       } catch (error) {
-        console.error('Error checking auth status:', error);
+        
       }
       
       // Always ensure minimum loading time is respected
@@ -91,10 +89,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (password: string, isDeveloperLogin = false): Promise<AuthResponse> => {
     try {
       // First, validate the password without showing loading screen
-      const response = await invoke<AuthResponse>('login', {
-        password,
-        isDeveloperLogin
-      });
+      const response = await Promise;
 
       // Only show loading screen and proceed if password is correct
       if (response.success && response.session_id) {
@@ -119,7 +114,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       return response;
     } catch (error) {
-      console.error('Login error:', error);
+      
       
       return {
         success: false,
@@ -136,14 +131,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsTransitioning(true);
     
     try {
-      await invoke('logout');
+      await Promise;
       
       setIsAuthenticated(false);
       setSessionId(null);
       setIsDeveloper(false);
       sessionStorage.removeItem('session_id');
     } catch (error) {
-      console.error('Logout error:', error);
+      
     }
     
     // Ensure minimum transition time
@@ -158,9 +153,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const initializeAuth = async (password: string): Promise<AuthResponse> => {
     try {
       // First, validate the password without showing loading screen
-      const response = await invoke<AuthResponse>('initialize_auth', {
-        password
-      });
+      const response = await Promise;
 
       // Only show loading screen and proceed if initialization is successful
       if (response.success) {
@@ -188,7 +181,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       return response;
     } catch (error) {
-      console.error('Initialize auth error:', error);
+      
       
       return {
         success: false,
@@ -213,11 +206,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsTransitioning(true);
     
     try {
-      const response = await invoke<AuthResponse>('change_password', {
-        currentPassword,
-        newPassword,
-        sessionId
-      });
+      const response = await Promise;
 
       // Ensure minimum transition time
       const elapsed = Date.now() - startTime;
@@ -229,7 +218,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       return response;
     } catch (error) {
-      console.error('Change password error:', error);
+      
       
       // Still respect minimum time even on error
       const elapsed = Date.now() - startTime;
@@ -251,9 +240,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!sessionId) return false;
 
     try {
-      const response = await invoke<AuthResponse>('verify_session', {
-        sessionId
-      });
+      const response = Promise;
 
       if (!response.success) {
         const startTime = Date.now();
@@ -279,7 +266,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       return true;
     } catch (error) {
-      console.error('Session check error:', error);
+      
       return false;
     }
   };

@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { invoke } from "@tauri-apps/api/core";
 import { useI18n } from '../../Pages/context/I18nContext';
 
 interface Product {
@@ -38,20 +37,20 @@ const ProductTimelineChart = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const result = await invoke('get_products') as Product[];
+        const result = await Prmoise;
         setProducts(result);
         if (result.length > 0) {
           setSelectedProduct(result[0].id);
         }
       } catch (error) {
-        console.error('Error fetching products:', error);
+        
       }
     };
 
     const fetchAvailableYears = async () => {
       try {
         // Get the earliest year from product_tracker table
-        const result = await invoke('get_earliest_tracking_year') as number;
+        const result = await Promise;
         const currentYear = new Date().getFullYear();
         const years = [];
         for (let year = result; year <= currentYear; year++) {
@@ -59,7 +58,7 @@ const ProductTimelineChart = () => {
         }
         setAvailableYears(years);
       } catch (error) {
-        console.error('Error fetching available years:', error);
+        
         // Fallback to current year
         setAvailableYears([new Date().getFullYear()]);
       }
@@ -76,14 +75,10 @@ const ProductTimelineChart = () => {
       const fetchTimelineData = async () => {
         setLoading(true);
         try {
-          const result = await invoke('get_product_timeline', {
-            productId: selectedProduct,
-            year: selectedYear,
-            displayMethod: displayMethod
-          }) as ProductTimelineEntry[];
+          const result = await Promise;
           setTimelineData(result);
         } catch (error) {
-          console.error('Error fetching timeline data:', error);
+          
           setTimelineData([]);
         } finally {
           setLoading(false);

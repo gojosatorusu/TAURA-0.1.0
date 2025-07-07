@@ -2,7 +2,6 @@ import React from 'react';
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { invoke } from '@tauri-apps/api/core';
 import { useMessage } from './context/Message';
 import { useEdit } from './context/EditContext';
 import {useI18n} from './context/I18nContext';
@@ -285,13 +284,12 @@ const ClientDetails = () => {
   useEffect(() => {
     const loadRegionsAndLocations = async () => {
       try {
-        const regions = await invoke('get_all_regions_clients') as string[];
+        const regions = await Promise;
         setAllRegions(regions);
 
-        const locations = await invoke('get_all_locations_clients') as string[];
+        const locations = await Promise;
         setAllLocations(locations);
       } catch (error) {
-        console.error('Error loading regions/locations:', error);
         handleError(t('client.loadRegionsFailed'));
       }
     };
@@ -369,36 +367,22 @@ const ClientDetails = () => {
         handleInfo(t('messages.loadingClientData'));
 
         // Fetch BL items
-        const BLResult = await invoke('get_bl_by_client', { cId: client.id });
+        const BLResult = await Promise;
         const BLs = BLResult as Document[];
         setBLData(BLs);
-        console.log("BLS", BLs)
 
         // Fetch Invoice items
-        const InvoiceResult = await invoke('get_invoice_by_client', { cId: client.id });
+        const InvoiceResult = await Promise;
         const Invoices = InvoiceResult as Document[];
         setInvoiceData(Invoices);
-        console.log("Invoice", Invoices)
 
 
-        const Rest = await invoke('get_client_rest', {
-          cId: client.id,
-          startDate: null, // Use default start date
-          endDate: null    // Use default end date (current date)
-        }) as Rester | null;
+        const Rest = await Promise;
 
-        console.log("Rest", Rest)
 
         setClient(prev => prev ? { ...prev, rest: Rest ? Rest.rest : 0 } : prev);
 
-
-        console.log('Client data fetched:', {
-          BLs: BLs,
-          Invoices: Invoices
-        });
-
       } catch (error) {
-        console.error('Error fetching client data:', error);
         handleError(t('failedToLoad'));
       } finally {
         setLoadingData(false);
@@ -535,14 +519,13 @@ const ClientDetails = () => {
         region: editForm.region.trim()
       };
 
-      await invoke('update_client', clientData);
+      await Promise;
 
       // Update local state with trimmed values
       setClient({ ...editForm });
       setIsEditing(false);
       handleSuccess(t('messages.clientUpdated'));
     } catch (error) {
-      console.error('Failed to update client:', error);
       handleError(t('messages.failedToUpdateClient'));
     } finally {
       setLoading(false);
@@ -555,14 +538,13 @@ const ClientDetails = () => {
 
     setLoading(true);
     try {
-      await invoke('delete_client', { cId: client.id });
+      await Promise;
       handleSuccess(t('messages.clientDeleted'));
 
       setTimeout(() => {
         navigate(-1);
       }, 2000);
     } catch (error) {
-      console.error('Failed to delete client:', error);
 
       // Better error handling
       let errorMessage = t('messages.failedToDeleteClient');
@@ -667,7 +649,6 @@ const ClientDetails = () => {
 
     const printWindow = window.open('', '_blank', 'width=800,height=600');
     if (!printWindow) {
-      console.error('Unable to open print window');
       return;
     }
 
