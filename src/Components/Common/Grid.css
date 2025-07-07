@@ -1,0 +1,106 @@
+/* Root background is presumably dark. We'll assume something like #1F1F2E behind everything */
+
+/* Base table styling */
+table {
+    background-color: #111827;
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    color: #e2e2e2; /* Light text color for dark backgrounds */
+    border-radius: 6px;
+    overflow: hidden; /* if you want a subtle round corner effect on the table */
+  }
+  
+  /* Header cells */
+  thead th {
+    background-color: #2b2b57; /* Dark background for header row */
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    cursor: pointer; /* So users see it's clickable for sorting */
+  }
+  /* Sort indicators */
+  .sorted-asc::after {
+    content: ' ▲';
+    font-size: 0.8rem;
+  }
+  .sorted-desc::after {
+    content: ' ▼';
+    font-size: 0.8rem;
+  }
+  
+  /* Body rows */
+  tbody tr {
+    cursor: pointer; /* So users know row is clickable */
+    transition: background-color 0.2s ease;
+  }
+  
+  /* Zebra striping */
+  /* tbody tr:nth-child(even) {
+    background-color: #2F2F41; 
+  } */
+  
+  /* Hover effect */
+  tbody tr:hover {
+    background-color: #3A3A52;
+  }
+  
+  tbody td {
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid #444;
+  }
+  
+  /* Footer cells */
+  tfoot th {
+    background-color: #323244;
+    padding: 0.8rem 1rem;
+    border-top: 2px solid #444;
+    font-weight: 500;
+    text-align: left; /* Ensures footer text is left-aligned */
+  }
+  
+  /* Container spacing */
+  .p-2 {
+    padding: 1rem;
+  }
+  
+  /* Global filter styling */
+  .global-filter {
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+  }
+  .global-filter label {
+    margin-right: 0.5rem;
+    font-weight: 500;
+    color: #e2e2e2;
+  }
+  .global-filter input {
+    background-color: #2A2A3B;
+    border: 1px solid #444;
+    color: #e2e2e2;
+    padding: 0.4rem;
+    border-radius: 4px;
+    width: 70%;
+  }
+  
+  /* Button styling */
+  button.border {
+    background-color: #323244;
+    color: #e2e2e2;
+    border: 1px solid #444;
+    padding: 0.5rem 1rem;
+    margin-right: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    border-radius: 4px;
+  }
+  
+  button.border:hover {
+    background-color: #3A3A52;
+  }
+  .grid-table-fixed {
+  table-layout: fixed;
+}
+  

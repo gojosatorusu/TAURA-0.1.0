@@ -1,0 +1,7 @@
+.app-main-container, .app-main-main {
+  /* contain: layout; */
+  will-change: transform;
+}
+body {
+  position: relative; /* This helps with fixed positioning context */
+}

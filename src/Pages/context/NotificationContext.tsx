@@ -1,0 +1,59 @@
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { invoke } from '@tauri-apps/api/core';
+
+interface NotificationContextType {
+  hasNotifications: boolean;
+  checkNotifications: () => Promise<void>;
+  clearNotifications: () => void;
+}
+
+const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
+
+export const useNotifications = () => {
+  const context = useContext(NotificationContext);
+  if (!context) {
+    throw new Error('useNotifications must be used within a NotificationProvider');
+  }
+  return context;
+};
+
+interface NotificationProviderProps {
+  children: ReactNode;
+}
+
+export const NotificationProvider: React.FC<NotificationProviderProps> = ({ children }) => {
+  const [hasNotifications, setHasNotifications] = useState(false);
+
+  const checkNotifications = async () => {
+    try {
+      // Check raw materials below threshold
+      const rawMaterials = await invoke('get_raw_materials') as any[];
+      const lowStockRawMaterials = rawMaterials.filter(rm => rm.quantity <= rm.threshold);
+
+      // Check products below threshold
+      const products = await invoke('get_products') as any[];
+      const lowStockProducts = products.filter(p => p.quantity <= p.threshold);
+
+      // Set notification state if any items are below threshold
+      const hasLowStock = lowStockRawMaterials.length > 0 || lowStockProducts.length > 0;
+      setHasNotifications(hasLowStock);
+    } catch (error) {
+      console.error('Error checking notifications:', error);
+    }
+  };
+
+  const clearNotifications = () => {
+    setHasNotifications(false);
+  };
+
+  // Check notifications on app startup
+  useEffect(() => {
+    checkNotifications();
+  }, []);
+
+  return (
+    <NotificationContext.Provider value={{ hasNotifications, checkNotifications, clearNotifications }}>
+      {children}
+    </NotificationContext.Provider>
+  );
+};
